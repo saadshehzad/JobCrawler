@@ -35,11 +35,16 @@ class BaseCrawler(ABC):
         pass
 
     @abstractmethod
+    def search_jobs(self):
+        """Method to perform login on the website."""
+        pass
+
+    # @abstractmethod
     def apply_jobs(self):
         """Method to perform login on the website."""
         pass
 
-    @abstractmethod
+    # @abstractmethod
     def apply(self):
         """Method to apply for a job on the website."""
         pass

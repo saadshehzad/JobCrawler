@@ -21,9 +21,10 @@ class Command(BaseCommand):
                 continue
 
             login = crawler.login()
-            time.sleep(5)
+            
             if login:
                 crawler.search_jobs()
+
             print("===================================================================")
             crawler.close_driver()
             self.stdout.write(self.style.SUCCESS(f"Applied for jobs on {website.name}"))
