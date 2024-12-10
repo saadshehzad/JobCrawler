@@ -7,7 +7,7 @@ SECRET_KEY = "django-insecure-y)_qvqod4t$n6o!ikbgt$oy($)6dsx-054yljy)$a(t4l0)-wp
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    "0.0.0.0",
+    "0.0.0.0", "localhost"
 ]
 
 INSTALLED_APPS = [
