@@ -93,14 +93,112 @@ class LinkedIn(BaseCrawler):
 
             sleep(5)
 
-            easy_apply_button = WebDriverWait(self.driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, "//button[span[text()='Easy Apply']]"))
-            )
-            easy_apply_button.click()
-            self.driver.implicitly_wait(5)
+            # easy_apply_button = WebDriverWait(self.driver, 10).until(
+            #     EC.element_to_be_clickable((By.XPATH, "//button[span[text()='Easy Apply']]"))
+            # )
+            # easy_apply_button.click()
+            # self.driver.implicitly_wait(5)
 
-            print("Successfully clicked on easy apply button")
+            # print("Successfully clicked on easy apply button")
+            # sleep(5)
+
+            retries = 3
+            for attempt in range(retries):
+                try:
+                    # Wait for the company link to be present
+                    company_link = WebDriverWait(self.driver, 10).until(
+                        EC.presence_of_element_located((By.XPATH, "//div[@class='job-details-jobs-unified-top-card__company-name']//a[@data-test-app-aware-link]"))
+                    )
+
+                    # Right-click on the company link
+                    actions = ActionChains(self.driver)
+                    actions.context_click(company_link).perform()
+                    print("Right-clicked on the company link.")
+
+                    # Open the company link in a new tab (using COMMAND for Mac, CONTROL for Windows)
+                    actions.key_down(Keys.COMMAND).click(company_link).key_up(Keys.COMMAND).perform()  # Use CONTROL for Windows
+                    print("Successfully selected 'Open in new tab' from the context menu.")
+                    
+                    sleep(5)  # Increased sleep time to ensure tab has time to load
+
+                    # Close the context menu by pressing ESC
+                    actions.send_keys(Keys.ESCAPE).perform()
+                    print("Pressed Escape to close the context menu.")
+                    sleep(2)  # Allow some time for the context menu to close
+                    break  # Exit the loop if successful
+
+                except StaleElementReferenceException:
+                    print(f"StaleElementReferenceException encountered. Retrying... {attempt + 1}/{retries}")
+                    sleep(2) 
+                except Exception as e:
+                    print(f"Error occurred: {e}")
+                    break
+
+            else:
+                print("Failed to interact with the company link after multiple attempts.")
+
+            try:
+                window_handles = self.driver.window_handles
+
+                if len(window_handles) > 1:
+                    self.driver.switch_to.window(window_handles[1])
+                    print("Switched to the second tab.")
+                    
+                    sleep(3)
+                    
+                else:
+                    print("No second tab found. Please check if the link opened successfully.")
+            except Exception as e:
+                print(f"Error occurred while switching tabs: {e}")
+
             sleep(5)
+
+            message_button = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located((By.XPATH, "//span[text()='Message']/parent::button"))
+            )
+
+            message_button.click()
+            print("Clicked on the 'Message' button.")
+
+            sleep(3)
+
+            select_element = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located((By.ID, "msg-shared-modals-msg-page-modal-presenter-conversation-topic"))
+            )
+            select = Select(select_element)
+            select.select_by_visible_text("Careers")
+            print("Selected the 'Service request' topic.")
+            sleep(3)
+
+            message_box = WebDriverWait(self.driver, 10).until(
+                EC.visibility_of_element_located((By.ID, "org-message-page-modal-message"))
+            )
+            message_box.click()
+
+
+            message = "Some message here"
+
+
+
+            message_box.send_keys(message)
+            print("Message has been pasted into the textarea.")
+            sleep(2)
+
+            new_message_header = self.driver.find_element(By.XPATH, "//h2[@id='msg-shared-modals-msg-page-modal' and text()='New message']")
+            new_message_header.click()
+            print("Clicked the 'New message' header.")
+
+            sleep(3)
+
+            element = self.driver.find_element(By.TAG_NAME, 'body')  # or any other element that is not covered by the context menu
+            ActionChains(self.driver).move_to_element(element).click().perform()
+
+            # Now proceed with clicking the send button
+            send_button = self.driver.find_element(By.ID, "ember379")
+            send_button.click()
+
+            sleep(10)
+
 
         except Exception as e:
             import traceback
