@@ -38,6 +38,7 @@ PyRect==0.2.0
 PyScreeze==1.0.1
 PySocks==1.7.1
 python-dateutil==2.9.0.post0
+python-decouple==3.8
 pytweening==1.2.0
 redis==5.2.0
 rubicon-objc==0.4.9
