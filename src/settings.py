@@ -1,10 +1,12 @@
 from pathlib import Path
+from decouple import config
+import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = "django-insecure-y)_qvqod4t$n6o!ikbgt$oy($)6dsx-054yljy)$a(t4l0)-wp"
+SECRET_KEY = config('DJANGO_SECRET_KEY')
 
-DEBUG = True
+DEBUG = config('DJANGO_DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = [
     "0.0.0.0", "localhost"
@@ -58,10 +60,22 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "src.wsgi.application"
 
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "db.sqlite3",
+#     }
+# }
+
+
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': config('POSTGRES_DB', default='django_db'),
+        'USER': config('POSTGRES_USER', default='django_user'),
+        'PASSWORD': config('POSTGRES_PASSWORD', default='django_password'),
+        'HOST': config('POSTGRES_HOST', default='localhost'),
+        'PORT': config('POSTGRES_PORT', default='5432'),
     }
 }
 
