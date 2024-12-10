@@ -5,6 +5,7 @@ WORKDIR /code/src
 COPY requirements.txt /code/
 RUN pip install --no-cache-dir -r /code/requirements.txt
 
+COPY .env /code/
 COPY ./src /code/src
 
 EXPOSE 8000
