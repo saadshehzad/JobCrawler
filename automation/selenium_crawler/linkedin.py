@@ -130,7 +130,6 @@ class LinkedIn(BaseCrawler):
                 if len(window_handles) > 1:
                     self.driver.switch_to.window(window_handles[1])
                     print("Switched to the second tab.")
-                    
                     sleep(3)
                     
                 else:
@@ -140,27 +139,37 @@ class LinkedIn(BaseCrawler):
 
             sleep(5)
 
-            message_button = WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located((By.XPATH, "//span[text()='Message']/parent::button"))
-            )
+            return True
 
-            message_button.click()
-            print("Clicked on the 'Message' button.")
+        except Exception as e:
+            import traceback
+            print("Error: Job search process failed.")
+            print(traceback.format_exc())
+            return False
 
-            sleep(3)
+        return True
+        
 
-            select_element = WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located((By.ID, "msg-shared-modals-msg-page-modal-presenter-conversation-topic"))
-            )
-            select = Select(select_element)
-            select.select_by_visible_text("Careers")
-            print("Selected the 'Service request' topic.")
-            sleep(3)
+    def paste_and_send_message(self):
+        message_button = WebDriverWait(self.driver, 10).until(
+        EC.presence_of_element_located((By.XPATH, "//span[text()='Message']/parent::button"))
+        )
+        message_button.click()
+        print("Clicked on the 'Message' button.")
+        sleep(3)
 
-            message_box = WebDriverWait(self.driver, 10).until(
-                EC.visibility_of_element_located((By.ID, "org-message-page-modal-message"))
-            )
-            message_box.click()
+        select_element = WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located((By.ID, "msg-shared-modals-msg-page-modal-presenter-conversation-topic"))
+        )
+        select = Select(select_element)
+        select.select_by_visible_text("Careers")
+        print("Selected the 'Service request' topic.")
+        sleep(3)
+
+        message_box = WebDriverWait(self.driver, 10).until(
+            EC.visibility_of_element_located((By.ID, "org-message-page-modal-message"))
+        )
+        message_box.click()
 
 
             message = "Some message here"
