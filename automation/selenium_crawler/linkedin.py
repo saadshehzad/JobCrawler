@@ -71,7 +71,7 @@ class LinkedIn(BaseCrawler):
         self.driver.get("https://www.linkedin.com/jobs/")
 
         try:
-            skill_set = SkillSet.objects.get_or_Create(
+            skill_set, created = SkillSet.objects.get_or_create(
                 skill_name="Django", country_name="European Union"
             )
 
@@ -107,7 +107,7 @@ class LinkedIn(BaseCrawler):
             location_input.click()
             location_input.send_keys(Keys.RETURN)
             print(
-                f"Successfully searched for '{skill_name}' in '{country_name}' on LinkedIn Jobs.",
+                f"Successfully searched for '{skill_set.skill_name}' in '{skill_set.country_name}' on LinkedIn Jobs.",
                 flush=True,
             )
             sleep(5)
@@ -162,7 +162,6 @@ class LinkedIn(BaseCrawler):
                 if len(window_handles) > 1:
                     self.driver.switch_to.window(window_handles[1])
                     print("Switched to the second tab.")
-                    sleep(3)
 
                 else:
                     print(
@@ -235,7 +234,7 @@ class LinkedIn(BaseCrawler):
                     )
                 )
                 message_box.click()
-                message = MyMessage.objects.get(name="Muhammad Shehzad").message
+                message = MyMessage.objects.get(name="Django - European Union").message
                 message_box.click()
 
                 for line in message.split("\n"):
