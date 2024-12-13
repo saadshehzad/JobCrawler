@@ -72,14 +72,11 @@ class LinkedIn(BaseCrawler):
             skill_name = "Django"
             country_name = "European Union"
 
-            print("Waiting for skill search input field...")
-
             skill_input = WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located((By.XPATH, "//input[@aria-label='Search by title, skill, or company']"))
             )
             skill_input.clear()
             skill_input.send_keys(skill_name)
-
             print(f"Successfully entered '{skill_name}' into the skill field.", flush=True)
 
             location_input = WebDriverWait(self.driver, 10).until(
@@ -87,7 +84,6 @@ class LinkedIn(BaseCrawler):
             )
             location_input.clear()
             location_input.send_keys(country_name)
-
             print(f"Successfully entered '{country_name}' into the country field.", flush=True)
 
             sleep(3) # Do not remove this
