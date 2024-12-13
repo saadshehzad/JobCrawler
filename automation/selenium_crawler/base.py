@@ -15,7 +15,9 @@ class BaseCrawler(ABC):
     def setup_driver(self):
         """Setup Chrome WebDriver with headless option."""
         chrome_options = Options()
-        chrome_options.add_argument("--start-maximized")  # Open browser in maximized window
+        chrome_options.add_argument(
+            "--start-maximized"
+        )  # Open browser in maximized window
         # chrome_options.add_argument("--headless")
         # chrome_options.add_argument("--disable-gpu")
         # chrome_options.add_argument("--no-sandbox")

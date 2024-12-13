@@ -1,5 +1,6 @@
-import pickle
 import os
+import pickle
+
 
 def save_cookies(driver, path="cookies.pkl"):
     with open(path, "wb") as file:
@@ -16,7 +17,7 @@ def load_cookies(driver, path="cookies.pkl"):
             cookies = pickle.load(file)
             for cookie in cookies:
                 driver.add_cookie(cookie)
-        
+
         print("Cookies loaded successfully.")
     except FileNotFoundError:
         print("Cookie file not found. Proceeding with manual login.")

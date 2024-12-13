@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Website, SkillSet, MyMessage
+from .models import MyMessage, SkillSet, Website
 
 
 class WebsiteAdmin(admin.ModelAdmin):
@@ -13,6 +13,7 @@ class SkillSetAdmin(admin.ModelAdmin):
     list_display = ("skill_name", "country_name", "created_at", "updated_at")
     search_fields = ("skill_name", "country_name")
     list_filter = ("created_at", "updated_at")
+
 
 class MyMessageAdmin(admin.ModelAdmin):
     list_display = ("name", "message", "created_at", "updated_at")

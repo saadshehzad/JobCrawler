@@ -1,11 +1,12 @@
-import time
 import random
-import pyautogui
+import time
 from abc import ABC, abstractmethod
+
+import pyautogui
 
 
 class Human(ABC):
-    
+
     def __init__(self):
         pass
 
