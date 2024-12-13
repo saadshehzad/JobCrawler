@@ -23,7 +23,9 @@ class Command(BaseCommand):
             login = crawler.login()
             
             if login:
-                crawler.search_jobs()
+                job = crawler.search_jobs()
+                if job:
+                    crawler.paste_and_send_message()
 
             print("===================================================================")
             crawler.close_driver()
