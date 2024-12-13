@@ -9,7 +9,7 @@ from .utils import load_cookies, save_cookies
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.support.ui import Select
-from automation.models import SkillSet
+from automation.models import SkillSet, MyMessage
 
 
 class LinkedIn(BaseCrawler):
@@ -184,10 +184,7 @@ class LinkedIn(BaseCrawler):
                     EC.visibility_of_element_located((By.ID, "org-message-page-modal-message"))
                 )
                 message_box.click()
-
-
-            message = "Some message here"
-
+                message = MyMessage.objects.get(name="Muhammad Shehzad").message
                 message_box.click()
 
                 for line in message.split("\n"):
