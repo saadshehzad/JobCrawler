@@ -9,6 +9,7 @@ from .utils import load_cookies, save_cookies
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.support.ui import Select
+from automation.models import SkillSet
 
 
 class LinkedIn(BaseCrawler):
@@ -69,22 +70,21 @@ class LinkedIn(BaseCrawler):
         self.driver.get("https://www.linkedin.com/jobs/")
 
         try:
-            skill_name = "Django"
-            country_name = "European Union"
+            skill_set = SkillSet.objects.get(skill_name="Django", country_name="European Union")
 
             skill_input = WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located((By.XPATH, "//input[@aria-label='Search by title, skill, or company']"))
             )
             skill_input.clear()
-            skill_input.send_keys(skill_name)
-            print(f"Successfully entered '{skill_name}' into the skill field.", flush=True)
+            skill_input.send_keys(skill_set.skill_name)
+            print(f"Successfully entered '{skill_set.skill_name}' into the skill field.", flush=True)
 
             location_input = WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located((By.XPATH, "//input[@aria-label='City, state, or zip code']"))
             )
             location_input.clear()
-            location_input.send_keys(country_name)
-            print(f"Successfully entered '{country_name}' into the country field.", flush=True)
+            location_input.send_keys(skill_set.country_name)
+            print(f"Successfully entered '{skill_set.country_name}' into the country field.", flush=True)
 
             sleep(3) # Do not remove this
 
