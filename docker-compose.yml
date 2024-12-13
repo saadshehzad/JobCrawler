@@ -5,8 +5,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: django_app
-    command: python src/manage.py runserver 0.0.0.0:8000
+    container_name: crawler_backend
+    command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - ./src:/code/src
     ports:
