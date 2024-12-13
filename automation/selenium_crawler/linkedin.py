@@ -44,7 +44,6 @@ class LinkedIn(BaseCrawler):
 
             password_field = wait.until(EC.presence_of_element_located((By.NAME, "session_password")))
             password_field.send_keys(self.website.password)
-
             sleep(10)
 
             login_button = wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "btn__primary--large")))
@@ -58,6 +57,13 @@ class LinkedIn(BaseCrawler):
             return
 
         return True
+
+    def check_if_company_allow_message(self):
+        return True
+    
+    def check_if_already_message_sent(self):
+        return True
+
 
     def search_jobs(self):
         self.driver.get("https://www.linkedin.com/jobs/")
