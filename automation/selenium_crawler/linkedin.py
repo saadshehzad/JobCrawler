@@ -59,13 +59,6 @@ class LinkedIn(BaseCrawler):
 
         return True
 
-    def check_if_company_allow_message(self):
-        return True
-    
-    def check_if_already_message_sent(self):
-        return True
-
-
     def search_jobs(self):
         self.driver.get("https://www.linkedin.com/jobs/")
 
@@ -148,50 +141,75 @@ class LinkedIn(BaseCrawler):
             return False
 
         return True
+
+    def check_if_company_allow_message(self):
+        try:
+            message_button = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located((By.XPATH, "//span[text()='Message']/parent::button"))
+            )
+            message_button.click()
+            print("Clicked on the 'Message' button.")
+            sleep(3)
+            return True
+
+        except Exception as e:
+            print(f"{e}")
+            print("Company does not allow to send message.")
+            return False
         
+        return True
+    
+    def check_if_already_message_sent(self):
+        try:
+            select_element = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located((By.ID, "msg-shared-modals-msg-page-modal-presenter-conversation-topic"))
+            )
+            return select_element
+        except Exception as e:
+            print(f"{e}")
+            print("Message is already sent.")
+            return False       
 
     def paste_and_send_message(self):
-        message_button = WebDriverWait(self.driver, 10).until(
-        EC.presence_of_element_located((By.XPATH, "//span[text()='Message']/parent::button"))
-        )
-        message_button.click()
-        print("Clicked on the 'Message' button.")
-        sleep(3)
+        company_allow = self.check_if_company_allow_message()
+        if company_allow:
+            already_message = self.check_if_already_message_sent()
+            if already_message:
+                select = Select(already_message)
+                select.select_by_visible_text("Careers")
+                print("Selected the 'Service request' topic.")
+                sleep(3)
 
-        select_element = WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located((By.ID, "msg-shared-modals-msg-page-modal-presenter-conversation-topic"))
-        )
-        select = Select(select_element)
-        select.select_by_visible_text("Careers")
-        print("Selected the 'Service request' topic.")
-        sleep(3)
-
-        message_box = WebDriverWait(self.driver, 10).until(
-            EC.visibility_of_element_located((By.ID, "org-message-page-modal-message"))
-        )
-        message_box.click()
+                message_box = WebDriverWait(self.driver, 10).until(
+                    EC.visibility_of_element_located((By.ID, "org-message-page-modal-message"))
+                )
+                message_box.click()
 
 
             message = "Some message here"
 
-        message_box.click()
+                message_box.click()
 
-        for line in message.split("\n"):
-            message_box.send_keys(line.strip())
-            message_box.send_keys(Keys.RETURN)
+                for line in message.split("\n"):
+                    message_box.send_keys(line.strip())
+                    message_box.send_keys(Keys.RETURN)
 
-        print("Message has been pasted into the textarea.")
-        sleep(5)
+                print("Message has been pasted into the textarea.")
+                sleep(5)
 
-        message_box.send_keys(Keys.TAB)
-        sleep(3)
+                message_box.send_keys(Keys.TAB)
+                sleep(3)
 
-        actions = ActionChains(self.driver)
-        actions.send_keys(Keys.RETURN).perform()
-        print("Send message button has been clicked using TAB and simulated RETURN.")
+                actions = ActionChains(self.driver)
+                actions.send_keys(Keys.RETURN).perform()
+                print("Send message button has been clicked using TAB and simulated RETURN.")
+                sleep(10)
+                return True
+        else:
+            return False
 
-        sleep(10)
-        return True
+    def switch_to_next_job(self):
+        pass
 
 
     def apply(self):
