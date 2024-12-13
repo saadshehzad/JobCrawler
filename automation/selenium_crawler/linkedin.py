@@ -90,44 +90,29 @@ class LinkedIn(BaseCrawler):
 
             location_input.click()
             location_input.send_keys(Keys.RETURN)
-
             print(f"Successfully searched for '{skill_name}' in '{country_name}' on LinkedIn Jobs.", flush=True)
-
             sleep(5)
-
-            # easy_apply_button = WebDriverWait(self.driver, 10).until(
-            #     EC.element_to_be_clickable((By.XPATH, "//button[span[text()='Easy Apply']]"))
-            # )
-            # easy_apply_button.click()
-            # self.driver.implicitly_wait(5)
-
-            # print("Successfully clicked on easy apply button")
-            # sleep(5)
 
             retries = 3
             for attempt in range(retries):
                 try:
-                    # Wait for the company link to be present
                     company_link = WebDriverWait(self.driver, 10).until(
                         EC.presence_of_element_located((By.XPATH, "//div[@class='job-details-jobs-unified-top-card__company-name']//a[@data-test-app-aware-link]"))
                     )
 
-                    # Right-click on the company link
                     actions = ActionChains(self.driver)
                     actions.context_click(company_link).perform()
+                    actions.move_by_offset(0, 50).click().perform()
                     print("Right-clicked on the company link.")
 
-                    # Open the company link in a new tab (using COMMAND for Mac, CONTROL for Windows)
-                    actions.key_down(Keys.COMMAND).click(company_link).key_up(Keys.COMMAND).perform()  # Use CONTROL for Windows
+                    actions.key_down(Keys.COMMAND).click(company_link).key_up(Keys.COMMAND).perform()
                     print("Successfully selected 'Open in new tab' from the context menu.")
-                    
-                    sleep(5)  # Increased sleep time to ensure tab has time to load
+                    sleep(5)
 
-                    # Close the context menu by pressing ESC
                     actions.send_keys(Keys.ESCAPE).perform()
                     print("Pressed Escape to close the context menu.")
-                    sleep(2)  # Allow some time for the context menu to close
-                    break  # Exit the loop if successful
+                    sleep(2)
+                    break
 
                 except StaleElementReferenceException:
                     print(f"StaleElementReferenceException encountered. Retrying... {attempt + 1}/{retries}")
