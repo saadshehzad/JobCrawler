@@ -24,3 +24,11 @@ class SkillSet(TimeStampedMixin):
 
     def __str__(self):
         return f"{self.skill_name} -- {self.country_name}"
+
+
+class MyMessage(TimeStampedMixin):
+    name = models.CharField(max_length=100)
+    message = models.TextField()
+
+    def __str__(self):
+        return f"{self.name}"
