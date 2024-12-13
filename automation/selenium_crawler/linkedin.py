@@ -70,7 +70,7 @@ class LinkedIn(BaseCrawler):
         self.driver.get("https://www.linkedin.com/jobs/")
 
         try:
-            skill_set = SkillSet.objects.get(skill_name="Django", country_name="European Union")
+            skill_set = SkillSet.objects.get_or_Create(skill_name="Django", country_name="European Union")
 
             skill_input = WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located((By.XPATH, "//input[@aria-label='Search by title, skill, or company']"))
