@@ -178,32 +178,24 @@ class LinkedIn(BaseCrawler):
 
             message = "Some message here"
 
+        message_box.click()
 
+        for line in message.split("\n"):
+            message_box.send_keys(line.strip())
+            message_box.send_keys(Keys.RETURN)
 
-            message_box.send_keys(message)
-            print("Message has been pasted into the textarea.")
-            sleep(2)
+        print("Message has been pasted into the textarea.")
+        sleep(5)
 
-            new_message_header = self.driver.find_element(By.XPATH, "//h2[@id='msg-shared-modals-msg-page-modal' and text()='New message']")
-            new_message_header.click()
-            print("Clicked the 'New message' header.")
+        message_box.send_keys(Keys.TAB)
+        sleep(3)
 
-            sleep(3)
+        actions = ActionChains(self.driver)
+        actions.send_keys(Keys.RETURN).perform()
+        print("Send message button has been clicked using TAB and simulated RETURN.")
 
-            element = self.driver.find_element(By.TAG_NAME, 'body')  # or any other element that is not covered by the context menu
-            ActionChains(self.driver).move_to_element(element).click().perform()
-
-            # Now proceed with clicking the send button
-            send_button = self.driver.find_element(By.ID, "ember379")
-            send_button.click()
-
-            sleep(10)
-
-
-        except Exception as e:
-            import traceback
-            print("Error: Job search process failed.")
-            print(traceback.format_exc())
+        sleep(10)
+        return True
 
 
     def apply(self):
