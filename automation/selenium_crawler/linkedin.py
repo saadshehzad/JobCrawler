@@ -22,7 +22,8 @@ class LinkedIn(BaseCrawler):
 
     def login(self):
         """Log into LinkedIn."""
-
+        
+        print(self.website.url)
         self.driver.get(self.website.url)
         load_cookies(self.driver)
         self.driver.refresh()
@@ -111,69 +112,7 @@ class LinkedIn(BaseCrawler):
                 flush=True,
             )
             sleep(5)
-
-            retries = 3
-            for attempt in range(retries):
-                try:
-                    company_link = WebDriverWait(self.driver, 10).until(
-                        EC.presence_of_element_located(
-                            (
-                                By.XPATH,
-                                "//div[@class='job-details-jobs-unified-top-card__company-name']//a[@data-test-app-aware-link]",
-                            )
-                        )
-                    )
-
-                    actions = ActionChains(self.driver)
-                    actions.context_click(company_link).perform()
-                    actions.move_by_offset(0, 50).click().perform()
-                    print("Right-clicked on the company link.")
-
-                    actions.key_down(Keys.COMMAND).click(company_link).key_up(
-                        Keys.COMMAND
-                    ).perform()
-                    print(
-                        "Successfully selected 'Open in new tab' from the context menu."
-                    )
-                    sleep(5)
-
-                    actions.send_keys(Keys.ESCAPE).perform()
-                    print("Pressed Escape to close the context menu.")
-                    sleep(2)
-                    break
-
-                except StaleElementReferenceException:
-                    print(
-                        f"StaleElementReferenceException encountered. Retrying... {attempt + 1}/{retries}"
-                    )
-                    sleep(2)
-                except Exception as e:
-                    print(f"Error occurred: {e}")
-                    break
-
-            else:
-                print(
-                    "Failed to interact with the company link after multiple attempts."
-                )
-
-            try:
-                window_handles = self.driver.window_handles
-
-                if len(window_handles) > 1:
-                    self.driver.switch_to.window(window_handles[1])
-                    print("Switched to the second tab.")
-
-                else:
-                    print(
-                        "No second tab found. Please check if the link opened successfully."
-                    )
-            except Exception as e:
-                print(f"Error occurred while switching tabs: {e}")
-
-            sleep(5)
-
-            return True
-
+            
         except Exception as e:
             import traceback
 
@@ -182,6 +121,21 @@ class LinkedIn(BaseCrawler):
             return False
 
         return True
+    
+    
+    def jobs_list(self):
+        url_list = []
+        list_items = self.driver.find_elements(By.XPATH, "//div[contains(@class, 'scaffold-layout__list')]//ul/li")
+        print("list_items ===============> ", list_items)
+        for item in list_items:
+            links = item.find_elements(By.TAG_NAME, "a")
+            for link in links:
+                href = link.get_attribute("href")
+                # link_text = link.text
+                # print(f"Link Text: {link_text}, URL: {href}")
+                url_list.append(href)
+                
+        return url_list
 
     def check_if_company_allow_message(self):
         try:
@@ -198,9 +152,10 @@ class LinkedIn(BaseCrawler):
         except Exception as e:
             print(f"{e}")
             print("Company does not allow to send message.")
+            
             return False
-
-        return True
+ 
+        return True 
 
     def check_if_already_message_sent(self):
         try:
@@ -213,9 +168,10 @@ class LinkedIn(BaseCrawler):
                 )
             )
             return select_element
-        except Exception as e:
+        except Exception as e: 
             print(f"{e}")
-            print("Message is already sent.")
+            print("Message is already sent.")  
+             
             return False
 
     def paste_and_send_message(self):
@@ -223,42 +179,92 @@ class LinkedIn(BaseCrawler):
         if company_allow:
             already_message = self.check_if_already_message_sent()
             if already_message:
-                select = Select(already_message)
-                select.select_by_visible_text("Careers")
-                print("Selected the 'Service request' topic.")
-                sleep(3)
-
-                message_box = WebDriverWait(self.driver, 10).until(
-                    EC.visibility_of_element_located(
-                        (By.ID, "org-message-page-modal-message")
+                try:
+                    select = Select(already_message)
+                    select.select_by_visible_text("Careers")
+                    print("Selected the 'Careers' topic.")
+                    sleep(3)
+                    message_box = WebDriverWait(self.driver, 10).until(
+                        EC.visibility_of_element_located((By.ID, "org-message-page-modal-message"))
                     )
-                )
-                message_box.click()
-                message = MyMessage.objects.get(name="Django - European Union").message
-                message_box.click()
+                    message_box.click()
+                    message = MyMessage.objects.get(name="Abdul Haris").message
+                    for line in message.split("\n"):
+                        message_box.send_keys(line.strip())
+                        message_box.send_keys(Keys.RETURN)
 
-                for line in message.split("\n"):
-                    message_box.send_keys(line.strip())
-                    message_box.send_keys(Keys.RETURN)
-
-                print("Message has been pasted into the textarea.")
-                sleep(5)
-
-                message_box.send_keys(Keys.TAB)
-                sleep(3)
-
-                actions = ActionChains(self.driver)
-                actions.send_keys(Keys.RETURN).perform()
-                print(
-                    "Send message button has been clicked using TAB and simulated RETURN."
-                )
-                sleep(10)
-                return True
+                    print("Message has been pasted into the textarea.")
+                    sleep(5)
+                    message_box.send_keys(Keys.TAB)
+                    sleep(3)
+                    actions = ActionChains(self.driver)
+                    actions.send_keys(Keys.RETURN).perform()
+                    print("Send message button has been clicked using TAB and simulated RETURN.")
+                    sleep(10)
+                    
+                    return True
+                
+                except Exception as e:
+                    print(f"Error occurred while sending the message: {e}")
+            else:
+                print("Message is already sent. Moving to the next job.")
         else:
-            return False
+            print("Company does not allow messaging. Moving to the next job.")
+        self.switch_to_next_job()
+        return False 
+  
+  
+    def open_job_link(self, url_list):
+        print(url_list)
+        print("********************8")
+        for url in url_list: 
+            try:
+                self.driver.execute_script("window.open('');")
+                self.driver.switch_to.window(self.driver.window_handles[-1])
+                self.driver.get(url)
+                # print(f"Opened job link in a new tab: {url}") 
+                
+                try:
+                    company_link = WebDriverWait(self.driver, 10).until(
+                        EC.element_to_be_clickable(
+                            (By.XPATH, "//div[@class='job-details-jobs-unified-top-card__company-name']//a[contains(@href, 'linkedin.com/company/')]")
+                        )
+                    )
+                    company_link.click()
+                    # print("Clicked on the company link successfully.")
+                    
+                except Exception as e:
+                    print(f"Failed to locate or click the company link: {e}")   
 
-    def switch_to_next_job(self):
-        pass
+                if not self.check_if_company_allow_message():
+                    print("=====================================")
+                    self.driver.close()
+                    self.driver.switch_to.window(self.driver.window_handles[0])
+                    continue
 
-    def apply(self):
-        """Automate applying for a job on LinkedIn."""
+                if self.check_if_already_message_sent():
+                    print("-------------------------------------")
+                    self.driver.close()
+                    self.driver.switch_to.window(self.driver.window_handles[0])
+                    continue
+
+                if self.paste_and_send_message():
+                    print("Message successfully sent for the job link.")
+                else:
+                    print("Failed to send the message for the job link.")
+
+                self.driver.close()
+                self.driver.switch_to.window(self.driver.window_handles[0])
+
+            except Exception as e:
+                if len(self.driver.window_handles) > 1:
+                    self.driver.close()
+                    self.driver.switch_to.window(self.driver.window_handles[0])
+
+        print("Finished processing all job links.")
+
+
+
+    # def apply(self):
+    #     """Automate applying for a job on LinkedIn."""
+        

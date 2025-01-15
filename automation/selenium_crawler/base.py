@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 
 
 class BaseCrawler(ABC):
@@ -14,6 +15,7 @@ class BaseCrawler(ABC):
 
     def setup_driver(self):
         """Setup Chrome WebDriver with headless option."""
+        chromedriver_path = r"C:\Users\abdul haris\Downloads\chromedriver-win64 (1)\chromedriver-win64\chromedriver.exe"
         chrome_options = Options()
         chrome_options.add_argument(
             "--start-maximized"
@@ -21,7 +23,10 @@ class BaseCrawler(ABC):
         # chrome_options.add_argument("--headless")
         # chrome_options.add_argument("--disable-gpu")
         # chrome_options.add_argument("--no-sandbox")
-        self.driver = webdriver.Chrome(options=chrome_options)
+        chrome_options.add_argument("--log-level=3")
+        service = Service(chromedriver_path)
+        self.driver = webdriver.Chrome(service=service, options=chrome_options)
+    
 
     def is_two_step_verification(self):
         """Check if the website is asking for 2FA."""
