@@ -33,3 +33,23 @@ class MyMessage(TimeStampedMixin):
 
     def __str__(self):
         return f"{self.name}"
+
+class CurrentJobState(TimeStampedMixin):
+    STATE_CHOICES = (
+        ("Login", "Login"),
+        ("Searching Jobs", "Searching Jobs"),
+        ("Opening Company Link", "Opening Company Link"),
+        ("Submitting Application", "Submitting Application"),
+        ("Application Submitted", "Application Submitted"),
+        ("Error Occurred", "Error Occurred"),
+    )
+
+    website = models.ForeignKey(Website, on_delete=models.CASCADE)
+    state = models.CharField(max_length=50, choices=STATE_CHOICES)
+    failure_reason = models.TextField(blank=True, null=True)
+    job_title = models.CharField(max_length=255, blank=True, null=True)
+    company_name = models.CharField(max_length=255, blank=True, null=True)
+    url = models.URLField(blank=True, null=True)
+    is_successful = models.BooleanField(default=False)
+    started_at = models.DateTimeField(blank=True, null=True)
+    ended_at = models.DateTimeField(blank=True, null=True)
